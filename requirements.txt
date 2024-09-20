@@ -1,0 +1,16 @@
+numpy
+pandas
+scipy
+hnswlib
+psycopg2-binary
+streamlit
+langchain
+langchain-community
+chromadb
+pdfplumber
+google-generativeai
+langchain_google_genai
+langchain_openai
+langchain_chroma
+faiss-cpu
+jq
