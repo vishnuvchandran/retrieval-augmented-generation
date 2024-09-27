@@ -19,6 +19,7 @@ from langchain.document_loaders import JSONLoader
 from langchain.prompts.chat import SystemMessagePromptTemplate
 from langchain.prompts.chat import HumanMessagePromptTemplate
 import json
+from utils.schema_index import SchemaIndexer
 
 
 store = {}
@@ -93,23 +94,10 @@ def process_query(query: str):
 
 
 
-def process_text_to_sql(query: str):
-    embedding = get_embedding_model('google')
+def process_text_to_sql(query: str, schema_indexer: SchemaIndexer):
     llm = get_llm('google')
     pgdb = connect_db()
-    documents = JSONLoader(file_path='./schema.jsonl', jq_schema='.', text_content=False, json_lines=True).load()
-    db = FAISS.from_documents(documents=documents, embedding=embedding)
-    
-    retriever = db.as_retriever(search_type='mmr', search_kwargs={'k': 5, 'lambda_mult': 1})
-    matched_documents = retriever.get_relevant_documents(query=query)
-
-    matched_tables = []
-
-    for document in matched_documents:
-        page_content = document.page_content
-        page_content = json.loads(page_content)
-        table_name = page_content['table_name']
-        matched_tables.append(f'{table_name}')
+    db = schema_indexer.get_index()
 
     search_kwargs = {
         'k': 20
@@ -188,7 +176,6 @@ def process_text_to_sql(query: str):
     2. Focus on answering the user's question directly and clearly.
     3. If appropriate, provide a brief explanation or context for the answer.
     """
-
 
     final_response = llm.invoke(
         final_template.format(user_query=query, sql_query=sql_query, result=result)

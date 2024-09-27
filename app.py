@@ -3,6 +3,7 @@ from utils.document_loader import load_document_from_uploadedfile
 from utils.text_splitter import split_text
 from utils.vector_store import store
 from utils.query_processing import process_query, process_text_to_sql
+from utils.schema_index import SchemaIndexer
 
 
 def main():
@@ -31,6 +32,8 @@ def main():
     # Main chat interface
     st.title("RAG Document Q&A System")
 
+    schema_indexer = SchemaIndexer()
+
     # Initialize chat history
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -50,7 +53,7 @@ def main():
             if app_type == 'RAG':
                 response = process_query(prompt)
             elif app_type == 'Text-to-SQL':
-                response = process_text_to_sql(prompt)
+                response = process_text_to_sql(prompt, schema_indexer)
             else:
                 response = process_query(prompt)
             
