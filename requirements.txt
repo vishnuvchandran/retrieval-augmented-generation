@@ -14,3 +14,5 @@ langchain_openai
 langchain_chroma
 faiss-cpu
 jq
+beautifulsoup4
+mysql-connector-python

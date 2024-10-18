@@ -4,6 +4,8 @@ from langchain_community.document_loaders import TextLoader
 from langchain_core.documents import Document
 import tempfile
 from langchain_community.document_loaders import PDFPlumberLoader
+from langchain_community.document_loaders import WebBaseLoader
+import bs4
 
 def load_document(file_path: Union[str, os.PathLike]) -> list[Document]:
     
@@ -33,3 +35,8 @@ def load_document_from_uploadedfile(uploaded_file) -> list[Document]:
         os.unlink(tmp_file_path)
 
     return documents
+
+
+def load_document_from_url(url) -> list[Document]:
+    loader = WebBaseLoader(url)
+    return loader.load()

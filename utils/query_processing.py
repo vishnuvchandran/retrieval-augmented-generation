@@ -96,7 +96,9 @@ def process_query(query: str):
 
 def process_text_to_sql(query: str, schema_indexer: SchemaIndexer):
     llm = get_llm('google')
-    pgdb = connect_db()
+    sqldb = connect_db()
+    if not sqldb:
+        return False
     db = schema_indexer.get_index()
 
     search_kwargs = {
@@ -157,7 +159,7 @@ def process_text_to_sql(query: str, schema_indexer: SchemaIndexer):
     
     response = llm.invoke(request)
     sql_query = '\n'.join(response.strip().split('\n')[1:-1])
-    result = pgdb.run(sql_query)
+    result = sqldb.run(sql_query)
 
     final_template = """
     Here is the result of your query:

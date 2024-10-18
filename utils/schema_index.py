@@ -3,16 +3,19 @@ from langchain.schema import Document
 from langchain.vectorstores import FAISS
 from utils.database import get_db_connection
 from utils.llm_selection import get_embedding_model
+import streamlit as st
 
 class SchemaIndexer:
     def __init__(self):
-        self.pgdb = get_db_connection()
+        self.sqldb = get_db_connection()
+        if not self.sqldb:
+            return None
         self.embedding_model = get_embedding_model('google')
         self.db = self._create_index()
 
 
     def _fetch_schema_from_db(self):
-        cursor = self.pgdb.cursor()
+        cursor = self.sqldb.cursor()
         schema_query = """
         SELECT 
             t.table_name,
